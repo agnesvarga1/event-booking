@@ -54,5 +54,6 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
 
     Route::middleware('auth')->group(function () {
         Route::post('/filter', [FilterController::class, 'filter'])->name('filter');
+        Route::get('/filter',[EventController::class,'create'])->name('event.create');
     });
 require __DIR__.'/auth.php';

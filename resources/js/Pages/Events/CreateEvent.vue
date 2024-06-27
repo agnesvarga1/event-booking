@@ -22,9 +22,7 @@ const availableRooms = ref([]);
 function searchMeetingRoom() {
     form.post("/filter", {
         onSuccess: (page) => {
-            // console.log(page.props.meetingrooms);
             availableRooms.value = page.props.meetingrooms;
-            console.log(availableRooms);
         },
     });
 }
@@ -117,6 +115,61 @@ function searchMeetingRoom() {
                                 v-model="form.end_date"
                                 required
                             />
+                        </div>
+                    </div>
+                    <div
+                        v-if="availableRooms.length > 0"
+                        class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3"
+                    >
+                        <h2>Available Meeting Rooms</h2>
+                        <h4 class="mt-2">
+                            Meetingrooms ({{ availableRooms.length }})
+                        </h4>
+                        <div class="overflow-y-auto max-h-96">
+                            <table
+                                class="shadow-lg bg-white mx-auto mt-3 w-full"
+                            >
+                                <tr>
+                                    <th
+                                        class="bg-blue-100 border text-left px-8 py-4"
+                                    >
+                                        Name
+                                    </th>
+                                    <th
+                                        class="bg-blue-100 border text-left px-8 py-4"
+                                    >
+                                        Description
+                                    </th>
+                                    <th
+                                        class="bg-blue-100 border text-left px-8 py-4"
+                                    >
+                                        Available places
+                                    </th>
+                                    <th
+                                        class="bg-blue-100 border text-left px-8 py-4"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                                <tr
+                                    v-for="meetingroom in availableRooms"
+                                    :key="meetingroom.id"
+                                >
+                                    <td class="border px-8 py-4">
+                                        {{ meetingroom.name }}
+                                    </td>
+                                    <td class="border px-8 py-4">
+                                        {{ meetingroom.description }}
+                                    </td>
+                                    <td class="border px-8 py-4">
+                                        {{ meetingroom.available_places }}
+                                    </td>
+
+                                    <td class="border px-8 py-4">
+                                        <PrimaryButton>Book</PrimaryButton>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
 
