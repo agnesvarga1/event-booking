@@ -12,7 +12,7 @@ const form = useForm({
     available_places: "",
 });
 
-const submit = () => {
+const submitRoom = () => {
     form.post(route("dashboard.meetingrooms.store"));
 };
 </script>
@@ -27,7 +27,7 @@ const submit = () => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <form class="w-4/5 mx-auto" @submit.prevent="submit">
+                <form class="w-4/5 mx-auto" @submit.prevent="submitRoom()">
                     <div>
                         <InputLabel for="name" value="Meeting room name" />
 
@@ -38,12 +38,10 @@ const submit = () => {
                             v-model="form.name"
                             required
                             autofocus
+                            placeholder="Kate"
                         />
 
-                        <InputError
-                            class="mt-2"
-                            :message="form.errors.user_name"
-                        />
+                        <InputError class="mt-2" :message="form.errors.name" />
                     </div>
 
                     <div class="mt-4">
@@ -55,6 +53,7 @@ const submit = () => {
                             cols="50"
                             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             v-model="form.description"
+                            placeholder="Meeting room description"
                         >
                         </textarea>
 
@@ -67,13 +66,22 @@ const submit = () => {
                             value="Available Places"
                         />
 
-                        <TextInput
+                        <!-- <TextInput
                             id="available_places"
                             type="number"
                             class="mt-1 block w-full"
                             v-model="form.available_places"
                             required
                             autocomplete="new-password"
+                            placeholder="45"
+                        /> -->
+                        <input
+                            id="available_places"
+                            type="number"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
+                            v-model="form.available_places"
+                            required
+                            placeholder="45"
                         />
 
                         <!-- <InputError

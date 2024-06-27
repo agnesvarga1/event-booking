@@ -15,7 +15,7 @@ class MeetingRoom extends Model
          'name',
          'slug',
          'available_places',
-         'decrption'
+         'description'
     ];
 
     public static function generateSlug($name)

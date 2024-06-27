@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MeetingRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-//use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 //use Inertia\Response;
 
@@ -33,7 +34,19 @@ class MeetingRoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       $data = $request->validate([
+            'name' => 'required|string|max:50|unique:'.MeetingRoom::class,
+            'description' => 'string|max:700',
+            'available_places' => 'required|integer|max:2000'
+        ]);
+
+
+        $data['name']= 'Room-'.$request->name;
+        $slug = MeetingRoom::generateSlug($data['name']);
+        $data['slug']= $slug;
+
+        MeetingRoom::create($data);
+        return to_route('dashboard.meetingrooms.index');
     }
 
     /**
