@@ -32,5 +32,16 @@ import { Head, Link } from "@inertiajs/vue3";
                 </div>
             </div>
         </div>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div>
+                    <Link :href="route('dashboard.events.create')">
+                        <h2 class="p-6 text-indigo-700">
+                            Create a new event
+                        </h2></Link
+                    >
+                </div>
+            </div>
+        </div>
     </AuthenticatedLayout>
 </template>

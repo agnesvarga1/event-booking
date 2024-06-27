@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MeetingRoomController;
-use App\Models\MeetingRoom;
+use App\Http\Controllers\EventController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,5 +43,13 @@ Route::resource('meetingrooms', MeetingRoomController::class )
 ->parameters(['meetingrooms'=>'meetingroom:slug']);
 
 });
+
+Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(function () {
+
+    Route::resource('events', EventController::class )
+    ->parameters(['events'=>'event:slug']);
+
+    });
+
 
 require __DIR__.'/auth.php';
