@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\MeetingRoom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+//use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
+//use Inertia\Response;
 
 class MeetingRoomController extends Controller
 {
@@ -12,7 +16,8 @@ class MeetingRoomController extends Controller
      */
     public function index()
     {
-        //
+        $meetingrooms = MeetingRoom::all();
+        return Inertia::render('MeetingRooms/Index', ['meetingrooms' => $meetingrooms]);
     }
 
     /**
@@ -20,7 +25,7 @@ class MeetingRoomController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('MeetingRooms/Create');
     }
 
     /**
