@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FilterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -51,5 +52,7 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
 
     });
 
-
+    Route::middleware('auth')->group(function () {
+        Route::post('/filter', [FilterController::class, 'filter'])->name('filter');
+    });
 require __DIR__.'/auth.php';
