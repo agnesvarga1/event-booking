@@ -10,14 +10,19 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
+let availableRooms = ref([]);
+let selectedRoomId = null;
+let selectedRoomName = "";
+let isRoom = false;
+
 const form = useForm({
     name: "",
     description: "",
     image: "",
     start_date: "",
     end_date: "",
+    meetingroom_id: "",
 });
-const availableRooms = ref([]);
 
 function searchMeetingRoom() {
     form.post("/filter", {
@@ -27,18 +32,22 @@ function searchMeetingRoom() {
     });
 }
 
-// const form = useForm({
-//     name: "",
-//     description: "",
-//     image: "",
-//     start_date: "",
-//     end_date: "",
-//     meeting_room_id: "",
-// });
+const selectMeetingRoom = (id, name) => {
+    isRoom = true;
+    availableRooms = ref([]);
+    selectedRoomId = id;
+    selectedRoomName = name;
+};
+
+const submitEvent = () => {
+    console.log(selectedRoomId);
+    form.meetingroom_id = selectedRoomId;
+    form.post(route("dashboard.events.store"));
+};
 </script>
 
 <template>
-    <Head title="Events|Create" />
+    <Head title="Events | Create" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -117,8 +126,11 @@ function searchMeetingRoom() {
                             />
                         </div>
                     </div>
+                    <div v-if="selectedRoomName !== ''" class="w-1/2 mt-2">
+                        <h4>Meeting Room Selected: {{ selectedRoomName }}</h4>
+                    </div>
                     <div
-                        v-if="availableRooms.length > 0"
+                        v-if="availableRooms.length > 0 && isRoom === false"
                         class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3"
                     >
                         <h2>Available Meeting Rooms</h2>
@@ -166,16 +178,36 @@ function searchMeetingRoom() {
                                     </td>
 
                                     <td class="border px-8 py-4">
-                                        <PrimaryButton>Book</PrimaryButton>
+                                        <PrimaryButton
+                                            @click="
+                                                selectMeetingRoom(
+                                                    meetingroom.id,
+                                                    meetingroom.name
+                                                )
+                                            "
+                                            >Select</PrimaryButton
+                                        >
                                     </td>
                                 </tr>
                             </table>
                         </div>
                     </div>
 
-                    <SecondaryButton type="submit" class="mt-2"
+                    <SecondaryButton type="submit" class="mt-3"
                         >Search</SecondaryButton
                     >
+                    <form class="inline mx-2" @submit.prevent="submitEvent()">
+                        <input
+                            id="meetingroom_id"
+                            type="hidden"
+                            :value="selectedRoomId"
+                        />
+                        <PrimaryButton
+                            v-if="selectedRoomId !== null"
+                            type="submit"
+                            >Book event</PrimaryButton
+                        >
+                    </form>
                 </form>
             </div>
         </div>

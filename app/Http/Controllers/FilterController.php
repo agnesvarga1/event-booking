@@ -31,7 +31,7 @@ class FilterController extends Controller
         })->get();
     //  dd($availableRooms);
 
-  //  return response()->json(['meetingrooms' => $availableRooms]);
+
 
     return Inertia::render('Events/CreateEvent', [
         'meetingrooms' => $availableRooms,
