@@ -14,6 +14,8 @@ let availableRooms = ref([]);
 let selectedRoomId = null;
 let selectedRoomName = "";
 let isRoom = false;
+let isErr = false;
+let frontEndErrMsg = ref();
 
 const form = useForm({
     name: "",
@@ -24,7 +26,31 @@ const form = useForm({
     meetingroom_id: "",
 });
 
+const clearErrs = () => {
+    frontEndErrMsg = "";
+    // isErr = false;
+};
+
+const checkValidDate = (start, end) => {
+    clearErrs();
+    let today = Date.now();
+    start = new Date(start).getTime();
+    end = new Date(end).getTime();
+    if (start < today) {
+        frontEndErrMsg = "The start date can NOT be before today";
+        isErr = true;
+    } else if (start > end) {
+        frontEndErrMsg = "The end date can NOT be earlier start date";
+        isErr = true;
+    }
+};
+
 function searchMeetingRoom() {
+    checkValidDate(form.start_date, form.end_date);
+    console.log(isErr);
+    if (isErr) {
+        setTimeout(clearErrs, 6000);
+    }
     form.post("/filter", {
         onSuccess: (page) => {
             availableRooms.value = page.props.meetingrooms;
@@ -42,7 +68,13 @@ const selectMeetingRoom = (id, name) => {
 const submitEvent = () => {
     console.log(selectedRoomId);
     form.meetingroom_id = selectedRoomId;
-    form.post(route("dashboard.events.store"));
+    form.post(route("dashboard.events.store"), {
+        forceFormData: true,
+    });
+
+    // router.post("dashboard/events", form, {
+    //     forceFormData: true,
+    // });
 };
 </script>
 
@@ -91,14 +123,20 @@ const submitEvent = () => {
                             placeholder="Description of the event"
                         >
                         </textarea>
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.description"
+                        />
                     </div>
                     <div class="mt-4">
                         <InputLabel for="image" value="Event Flyer Image" />
                         <input
                             id="image"
                             type="file"
+                            @input="form.image = $event.target.files[0]"
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
                         />
+                        <InputError class="mt-2" :message="form.errors.image" />
                     </div>
                     <div class="mt-4 flex">
                         <div class="w-1/2 mr-2">
@@ -113,6 +151,12 @@ const submitEvent = () => {
                                 v-model="form.start_date"
                                 required
                             />
+                            <InputError
+                                class="mt-2"
+                                :message="
+                                    form.errors.start_date || frontEndErrMsg
+                                "
+                            />
                         </div>
 
                         <div class="w-1/2">
@@ -124,13 +168,21 @@ const submitEvent = () => {
                                 v-model="form.end_date"
                                 required
                             />
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.end_date"
+                            />
                         </div>
                     </div>
                     <div v-if="selectedRoomName !== ''" class="w-1/2 mt-2">
                         <h4>Meeting Room Selected: {{ selectedRoomName }}</h4>
                     </div>
                     <div
-                        v-if="availableRooms.length > 0 && isRoom === false"
+                        v-if="
+                            availableRooms.length > 0 &&
+                            isRoom === false &&
+                            isErr === false
+                        "
                         class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3"
                     >
                         <h2>Available Meeting Rooms</h2>
