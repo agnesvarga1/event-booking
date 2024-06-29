@@ -20,8 +20,8 @@ class Event extends Model
     ];
 
 
-    public function type(): BelongsTo{
-        return $this->belongsTo(MeetingRoom::class);
+    public function meetingroom(): BelongsTo{
+        return $this->belongsTo(MeetingRoom::class,'meeting_room_id');
 
     }
 }

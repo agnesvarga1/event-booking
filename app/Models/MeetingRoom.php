@@ -23,6 +23,6 @@ class MeetingRoom extends Model
         return Str::slug($name, '-');
     }
     public function events(): HasMany{
-        return $this->hasMany( Event::class);
+        return $this->hasMany( Event::class, 'meeting_room_id');
     }
 }

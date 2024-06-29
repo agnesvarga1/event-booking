@@ -23,7 +23,7 @@ const form = useForm({
     image: "",
     start_date: "",
     end_date: "",
-    meetingroom_id: "",
+    meeting_room_id: "",
 });
 
 const clearErrs = () => {
@@ -47,7 +47,7 @@ const checkValidDate = (start, end) => {
 
 function searchMeetingRoom() {
     checkValidDate(form.start_date, form.end_date);
-    console.log(isErr);
+    //console.log(isErr);
     if (isErr) {
         setTimeout(clearErrs, 6000);
     }
@@ -66,8 +66,8 @@ const selectMeetingRoom = (id, name) => {
 };
 
 const submitEvent = () => {
-    console.log(selectedRoomId);
-    form.meetingroom_id = selectedRoomId;
+    //console.log(selectedRoomId);
+    form.meeting_room_id = selectedRoomId;
     form.post(route("dashboard.events.store"), {
         forceFormData: true,
     });
@@ -250,7 +250,7 @@ const submitEvent = () => {
                     >
                     <form class="inline mx-2" @submit.prevent="submitEvent()">
                         <input
-                            id="meetingroom_id"
+                            id="meeting_room_id"
                             type="hidden"
                             :value="selectedRoomId"
                         />

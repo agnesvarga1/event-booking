@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+use Illuminate\Support\Str;
 class EventController extends Controller
 {
     /**
@@ -32,11 +32,22 @@ class EventController extends Controller
     {
         $data = $request->validate([
              'name' => 'required|string|max:50|unique:'.Event::class,
-             'description' => 'string|max:700',
-             'image' => 'mimes:jpg,bmp,png,pdf',
+             'description' => 'nullable|string|max:700',
+             'image' => 'nullable|mimes:jpg,bmp,png,pdf',
             'start_date' => 'required|date',
-            'end_date' => 'required|date'
+            'end_date' => 'required|date',
+            'meeting_room_id' => 'required|exists:meeting_rooms,id',
         ]);
+         $slug = Str::slug($data['name']);
+
+         if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('images', 'public'); // Store in public disk
+            $data['image'] = $path;
+        }
+
+        $data['slug']= $slug;
+       $event =  Event::create($data);
+        return Inertia::location(route('dashboard.events.show', $event->slug));
     }
 
     /**
@@ -44,7 +55,11 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        //
+      $event->load('meetingroom');
+     // $event = Event::with('meetingroom')->find($event->id);
+
+      // dd($event);
+        return Inertia::render('Events/SingleEvent',[ 'event'=>$event]);
     }
 
     /**
