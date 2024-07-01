@@ -25,8 +25,12 @@ import { Head, Link } from "@inertiajs/vue3";
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div>
                     <Link :href="route('dashboard.meetingrooms.index')">
-                        <h2 class="p-6 text-indigo-700">
+                        <h2 class="p-6 text-indigo-700 text-2xl">
                             Add a new meeting room
+                            <span
+                                class="text-white text-center bg-indigo-700 px-4 py-2 rounded-full ml-3 font-bold"
+                                >&plus;</span
+                            >
                         </h2></Link
                     >
                 </div>
@@ -36,8 +40,12 @@ import { Head, Link } from "@inertiajs/vue3";
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div>
                     <Link :href="route('dashboard.events.create')">
-                        <h2 class="p-6 text-indigo-700">
+                        <h2 class="p-6 text-indigo-700 text-2xl">
                             Create a new event
+                            <span
+                                class="text-white text-center bg-indigo-700 px-4 py-2 rounded-full ml-3 font-bold"
+                                >&plus;</span
+                            >
                         </h2></Link
                     >
                 </div>

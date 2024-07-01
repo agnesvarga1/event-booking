@@ -9,17 +9,23 @@ use Inertia\Inertia;
 
 class FilterController extends Controller
 {
+
+
+    // public function index(){
+
+    // }
+
     public function filter(Request $request){
         $data = $request->validate([
-            // 'name' => 'required|string|max:50|unique:'.Event::class,
-            // 'description' => 'string|max:700',
-            // 'image' => 'mimes:jpg,bmp,png,pdf',
+            //  'name' => 'required|string|max:50|unique:'.Event::class,
+            //  'description' => 'nullable|string|max:700',
+            //  'image' => 'nullable|mimes:jpg,bmp,png,pdf',
             'start_date' => 'required|date',
             'end_date' => 'required|date'
         ]);
     $startDate = $data['start_date'];
     $endDate = $data['end_date'];
-   // dd($startDate,$endDate );
+  //  dd($startDate,$endDate );
      //return free rooms logic
         $availableRooms = MeetingRoom::whereDoesntHave('events', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('start_date', [$startDate, $endDate])
@@ -29,8 +35,6 @@ class FilterController extends Controller
                             ->where('end_date', '>=', $endDate);
                   });
         })->get();
-    //  dd($availableRooms);
-
 
 
     return Inertia::render('Events/CreateEvent', [
@@ -38,3 +42,4 @@ class FilterController extends Controller
     ]);
     }
 }
+

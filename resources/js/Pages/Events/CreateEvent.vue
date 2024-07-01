@@ -28,7 +28,7 @@ const form = useForm({
 
 const clearErrs = () => {
     frontEndErrMsg = "";
-    // isErr = false;
+    isErr = false;
 };
 
 const checkValidDate = (start, end) => {
@@ -47,10 +47,7 @@ const checkValidDate = (start, end) => {
 
 function searchMeetingRoom() {
     checkValidDate(form.start_date, form.end_date);
-    //console.log(isErr);
-    if (isErr) {
-        setTimeout(clearErrs, 6000);
-    }
+
     form.post("/filter", {
         onSuccess: (page) => {
             availableRooms.value = page.props.meetingrooms;
@@ -66,7 +63,8 @@ const selectMeetingRoom = (id, name) => {
 };
 
 const submitEvent = () => {
-    //console.log(selectedRoomId);
+    console.log(selectedRoomId);
+
     form.meeting_room_id = selectedRoomId;
     form.post(route("dashboard.events.store"), {
         forceFormData: true,

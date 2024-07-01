@@ -25,7 +25,16 @@ defineProps({ event: Object });
             <p>
                 Capacity: max. {{ event.meetingroom.available_places }} person
             </p>
-            <img class="mt-3 w-1/2" :src="`${imgUrl}${event.image}`" alt="" />
+            <div v-if="event.image">
+                <img
+                    class="mt-3 w-1/2"
+                    :src="`${imgUrl}${event.image}`"
+                    alt=""
+                />
+            </div>
+            <p class="border-2 border-indigo-500 rounded-md p-3" v-else>
+                NO EVENT IMAGE
+            </p>
 
             <h3>{{ event.name }}</h3>
             <p>{{ event.description }}</p>

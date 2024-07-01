@@ -177,6 +177,20 @@ const showingNavigationDropdown = ref(false);
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('dashboard.meetingrooms.index')"
+                            :active="
+                                route().current('dashboard.meetingrooms.index')
+                            "
+                        >
+                            All Meeting Rooms
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('dashboard.events.index')"
+                            :active="route().current('dashboard.evens.index')"
+                        >
+                            All Events
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
