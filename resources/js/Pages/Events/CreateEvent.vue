@@ -11,11 +11,11 @@ import { reactive, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
 let availableRooms = ref([]);
-let selectedRoomId = null;
-let selectedRoomName = "";
-let isRoom = false;
-let isErr = false;
-let frontEndErrMsg = ref();
+let selectedRoomId = ref();
+let selectedRoomName = ref("");
+let isRoom = ref(false);
+let isErr = ref(false);
+let frontEndErrMsg = ref("");
 
 const form = useForm({
     name: "",
@@ -46,26 +46,30 @@ const checkValidDate = (start, end) => {
 };
 
 function searchMeetingRoom() {
+    console.log(availableRooms, selectedRoomId, isRoom);
     checkValidDate(form.start_date, form.end_date);
+
+    isRoom.value = false;
 
     form.post("/filter", {
         onSuccess: (page) => {
+            // console.log(availableRooms.value);
             availableRooms.value = page.props.meetingrooms;
+            //console.log(availableRooms.value, isRoom);
         },
     });
 }
 
 const selectMeetingRoom = (id, name) => {
-    isRoom = true;
-    availableRooms = ref([]);
-    selectedRoomId = id;
-    selectedRoomName = name;
+    isRoom.value = true;
+    //  availableRooms = ref([]);
+    selectedRoomId.value = id;
+    selectedRoomName.value = name;
+    console.log(selectedRoomId.value);
 };
 
 const submitEvent = () => {
-    console.log(selectedRoomId);
-
-    form.meeting_room_id = selectedRoomId;
+    form.meeting_room_id = selectedRoomId.value;
     form.post(route("dashboard.events.store"), {
         forceFormData: true,
     });
@@ -176,11 +180,7 @@ const submitEvent = () => {
                         <h4>Meeting Room Selected: {{ selectedRoomName }}</h4>
                     </div>
                     <div
-                        v-if="
-                            availableRooms.length > 0 &&
-                            isRoom === false &&
-                            isErr === false
-                        "
+                        v-if="availableRooms.length > 0 && !isRoom && !isErr"
                         class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3"
                     >
                         <h2>Available Meeting Rooms</h2>
@@ -243,18 +243,16 @@ const submitEvent = () => {
                         </div>
                     </div>
 
-                    <SecondaryButton type="submit" class="mt-3"
-                        >Search</SecondaryButton
-                    >
+                    <SecondaryButton type="submit" class="mt-3">
+                        SEARCH
+                    </SecondaryButton>
                     <form class="inline mx-2" @submit.prevent="submitEvent()">
                         <input
                             id="meeting_room_id"
                             type="hidden"
                             :value="selectedRoomId"
                         />
-                        <PrimaryButton
-                            v-if="selectedRoomId !== null"
-                            type="submit"
+                        <PrimaryButton v-if="selectedRoomId" type="submit"
                             >Book event</PrimaryButton
                         >
                     </form>
