@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("description")->nullable();
             $table->string('slug');
             $table->string('image')->nullable();
+            $table->string('color')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->unsignedBigInteger('meeting_room_id')->nullable();

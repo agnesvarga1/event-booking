@@ -30,6 +30,19 @@ class EventSeeder extends Seeder
             return true;
         }
 
+        function genColorRand(){
+            $numbers = range('0','9');
+            $chars = range('a','f');
+            $arrAll = array_merge($numbers,$chars);
+            $hexColor = '#';
+            for($i=0; $i<6; $i++){
+               $char_key = array_rand($arrAll,1);
+               $char = $arrAll[$char_key];
+               $hexColor = $hexColor.$char;
+            }
+            return $hexColor;
+        }
+
         for ($i = 0; $i < 20; $i++) {
 
             $name = $faker->unique()->words(4,true);
@@ -43,11 +56,13 @@ class EventSeeder extends Seeder
             } while (!isAvailable($roomSchedules, $roomId, $start, $end));
 
             $roomSchedules[$roomId][] = ['start' => $start, 'end' => $end];
+            $color = genColorRand();
             Event::create( [
                 "name" => $name,
                 "slug"=>Str::slug($name,'-'),
                 "description" => $desc,
                 "image"=>null,
+                "color"=> $color,
                 "start_date" => $start,
                 "end_date" => $end,
                 "meeting_room_id" => $roomId

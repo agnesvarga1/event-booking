@@ -14,6 +14,7 @@ class Event extends Model
         "description",
         "slug",
         "image",
+        "color",
         "start_date",
         "end_date",
         "meeting_room_id"

@@ -31,9 +31,11 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        //dd($request->color);
         $data = $request->validate([
              'name' => 'required|string|max:50|unique:'.Event::class,
              'description' => 'nullable|string|max:700',
+             'color' =>'string|max:7|regex://',
              'image' => 'nullable|mimes:jpg,bmp,png,pdf',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
