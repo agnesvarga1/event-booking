@@ -6,9 +6,9 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Vue3ColorPicker } from "@cyhnkckali/vue3-color-picker";
 
 import { reactive, ref } from "vue";
-import { router } from "@inertiajs/vue3";
 
 let availableRooms = ref([]);
 let selectedRoomId = ref();
@@ -16,11 +16,18 @@ let selectedRoomName = ref("");
 let isRoom = ref(false);
 let isErr = ref(false);
 let frontEndErrMsg = ref("");
+const deafaultColor = ref("#ffffff");
+let color = ref();
+let isColorPicker = ref(false);
 
+const pickedColor = reactive({
+    background: color,
+});
 const form = useForm({
     name: "",
     description: "",
     image: "",
+    color: "",
     start_date: "",
     end_date: "",
     meeting_room_id: "",
@@ -70,6 +77,7 @@ const selectMeetingRoom = (id, name) => {
 
 const submitEvent = () => {
     form.meeting_room_id = selectedRoomId.value;
+    form.color = color;
     form.post(route("dashboard.events.store"), {
         forceFormData: true,
     });
@@ -129,6 +137,46 @@ const submitEvent = () => {
                             class="mt-2"
                             :message="form.errors.description"
                         />
+                    </div>
+                    <div
+                        @click="isColorPicker = !isColorPicker"
+                        class="mt-1 w-full border-1 border-gray-500 rounded-md shadow-sm bg-white p-2 cursor-pointer flex justify-between"
+                    >
+                        <div
+                            class="min-h-full w-6 border-2 border-gray-400 rounded-sm"
+                            :style="pickedColor"
+                        ></div>
+                        <span class="text-gray-500"
+                            >Choose the color of the event</span
+                        >
+                        <span
+                            ><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                            >
+                                <path
+                                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div v-show="isColorPicker">
+                        <Vue3ColorPicker
+                            class="my-3"
+                            v-model="color"
+                            mode="solid"
+                            :showPickerMode="false"
+                            :showAlpha="false"
+                            :showColorList="false"
+                            :showEyeDrop="false"
+                            type="HEX"
+                        />
+                        <PrimaryButton
+                            type="button"
+                            @click="isColorPicker = false"
+                            class="my-4"
+                            >Color</PrimaryButton
+                        >
                     </div>
                     <div class="mt-4">
                         <InputLabel for="image" value="Event Flyer Image" />
@@ -261,3 +309,9 @@ const submitEvent = () => {
         </div>
     </AuthenticatedLayout>
 </template>
+<style>
+svg {
+    width: 1.5rem;
+    fill: #6b7280;
+}
+</style>
