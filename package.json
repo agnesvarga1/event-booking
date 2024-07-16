@@ -19,6 +19,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@cyhnkckali/vue3-color-picker": "^2.0.2"
+        "@cyhnkckali/vue3-color-picker": "^2.0.2",
+        "moment": "^2.30.1"
     }
 }

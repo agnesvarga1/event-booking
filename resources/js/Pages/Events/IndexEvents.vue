@@ -44,6 +44,7 @@ const events = ref(props.events);
                 </th>
                 <th class="bg-blue-100 border text-left px-3 py-2">Actions</th>
             </tr>
+
             <tr v-for="event in events" :key="event.id">
                 <td
                     :style="{ background: event.color }"
@@ -51,7 +52,17 @@ const events = ref(props.events);
                 >
                     <span class="text-white"> {{ event.id }} </span>
                 </td>
-                <td class="border px-3 py-2">{{ event.name }}</td>
+
+                <td class="border px-3 py-2 cursor-pointer">
+                    <Link
+                        :href="
+                            route(`dashboard.events.show`, { slug: event.slug })
+                        "
+                    >
+                        {{ event.name }}
+                    </Link>
+                </td>
+
                 <td class="border px-3 py-2 desc">
                     {{ truncateText(event.description) }}
                 </td>
@@ -62,7 +73,8 @@ const events = ref(props.events);
                     {{ event.end_date }}
                 </td>
                 <td class="border px-3 py-2">
-                    {{ event.meetingroom.id }} | {{ event.meetingroom.name }}
+                    {{ event.meetingroom.id }} |
+                    {{ event.meetingroom.name }}
                 </td>
                 <td class="border px-3 py-2">Delete Edit</td>
             </tr>

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FilterController;
+use App\Http\Controllers\WeeklyScheduleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,6 +61,11 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
       });
 
 
+    });
+
+
+    Route::middleware('auth')->prefix('dashboard')->group(function () {
+        Route::get('/weeklyview', [WeeklyScheduleController::class, 'index'])->name('weeklyview');
     });
 
 require __DIR__.'/auth.php';

@@ -35,7 +35,7 @@ class EventController extends Controller
         $data = $request->validate([
              'name' => 'required|string|max:50|unique:'.Event::class,
              'description' => 'nullable|string|max:700',
-             'color' =>'string|max:7|regex://',
+             'color' => ['nullable','string','max:7','regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
              'image' => 'nullable|mimes:jpg,bmp,png,pdf',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
