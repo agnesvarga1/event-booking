@@ -32,17 +32,32 @@
                     </span>
                 </th>
             </tr>
+            <tr v-for="event in events" :key="event.id">
+                <td class="border px-3">
+                    {{ event.meetingroom.name }}
+                </td>
+                <td>{{ event.name }}</td>
+            </tr>
         </table>
     </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import moment from "moment";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-
+y;
+import { Head } from "@inertiajs/vue3";
+const props = defineProps({
+    events: Array,
+});
 const currentWeekStart = ref(moment().startOf("week"));
+const events = ref(props.events);
+
+onMounted(() => {
+    console.log(events);
+});
 
 const weekDays = computed(() => {
     let days = [];
@@ -50,7 +65,7 @@ const weekDays = computed(() => {
         const day = moment(currentWeekStart.value).add(i, "days");
         days.push({
             name: day.format("dddd"),
-            date: day.format("MMMM D YYYY"),
+            date: day.format("YYYY-MM-DD"),
         });
     }
     return days;

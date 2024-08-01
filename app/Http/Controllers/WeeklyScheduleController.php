@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\MeetingRoom;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class WeeklyScheduleController extends Controller
 {
@@ -13,7 +14,17 @@ class WeeklyScheduleController extends Controller
 
     public function index()
     {
-
-        return Inertia::render('Events/WeeklyView');
+        $now = Carbon::now();
+        $weekStart = $now->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+        $weekEnd = $now->endOfWeek(CARBON::SATURDAY)->format('Y-m-d');
+        //dd($weekStart,$weekEnd);
+        $events = Event::where(function($query) use ($weekStart, $weekEnd) {
+            $query->whereBetween('start_date', [$weekStart, $weekEnd])
+                  ->orWhereBetween('end_date', [$weekStart, $weekEnd]);
+        })->with('meetingroom')->get();
+        //dd($events);
+        return Inertia::render('Events/WeeklyView', [
+            'events' => $events
+        ]);
     }
 }

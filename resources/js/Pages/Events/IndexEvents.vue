@@ -81,6 +81,8 @@ const events = ref(props.events);
         </table>
     </AuthenticatedLayout>
 </template>
+// #079AC9;
+
 <style>
 /* .desc {
     text-overflow: ellipsis;
