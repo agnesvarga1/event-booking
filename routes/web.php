@@ -66,7 +66,7 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
 
     Route::middleware('auth')->prefix('dashboard')->group(function () {
         Route::get('/weeklyview', [WeeklyScheduleController::class, 'index'])->name('weeklyview');
-        //Route::post('/weeklyview', [WeeklyScheduleController::class, 'index'])->name('weeklyview');
+        Route::post('/weeklyview', [WeeklyScheduleController::class, 'handlePost'])->name('weeklyview');
     });
 
 require __DIR__.'/auth.php';

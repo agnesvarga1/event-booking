@@ -27,4 +27,23 @@ class WeeklyScheduleController extends Controller
             'events' => $events
         ]);
     }
+
+    public function handlePost(Request $request)
+    {
+        //dd($request);
+
+        $weekStart = Carbon::parse($request->startOfWeek);
+        $weekEnd =Carbon::parse($request->endOfWeek);
+       // dd($weekStart,$weekEnd);
+        $events = Event::where(function($query) use ($weekStart, $weekEnd) {
+            $query->whereBetween('start_date', [$weekStart, $weekEnd])
+                  ->orWhereBetween('end_date', [$weekStart, $weekEnd]);
+        })->with('meetingroom')->get();
+        //dd($events);
+        return Inertia::render('Events/WeeklyView', [
+            'events' => $events
+        ]);
+    }
 }
+
+
