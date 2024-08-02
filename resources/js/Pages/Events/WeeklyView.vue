@@ -4,14 +4,15 @@ import moment from "moment";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { Head } from "@inertiajs/vue3";
-import { Inertia } from "@inertiajs/inertia";
+
 const props = defineProps({
     events: Array,
 });
 
 const currentWeekStart = ref(moment().startOf("week"));
-let events = ref(props.events);
 
+let events = ref(props.events);
+let colspanVal = 1;
 const weekDays = computed(() => {
     let days = [];
     for (let i = 0; i < 7; i++) {
@@ -26,30 +27,13 @@ const weekDays = computed(() => {
 });
 
 // onMounted(() => {
-//     console.log(events.value);
+//     console.log(currEndOfWeek);
 // });
-
-const sendData = (s, e) => {
-    Inertia.post(
-        "/dashboard/weeklyview",
-        {
-            startOfWeek: s,
-            endOfWeek: e,
-        }
-        // {
-        //     onSuccess: () => {
-        //         events = props.events;
-        //         // currentWeekStart.value = weekStart;
-        //     },
-        // }
-    );
-};
 
 const nextWeek = () => {
     currentWeekStart.value = moment(currentWeekStart.value).add(1, "weeks");
-    const endOfWeek = moment(currentWeekStart.value).endOf("week");
 
-    sendData(currentWeekStart.value, endOfWeek);
+    //sendData(currentWeekStart.value, endOfWeek);
 };
 
 const prevWeek = () => {
@@ -60,19 +44,20 @@ const prevWeek = () => {
 };
 
 const getEventColspan = (event, date) => {
+    // const eventEnd = moment(event.end_date);
     if (moment(event.start_date).format("YYYY-MM-DD") === date) {
-        const eventEnd = moment(event.end_date);
+        const startEvent = moment(event.start_date);
         const endOfWeek = moment(currentWeekStart.value).endOf("week");
 
-        return Math.min(
-            endOfWeek.diff(moment(date), "days") + 1,
-            eventEnd.diff(moment(date), "days") + 1
-        );
+        colspanVal = endOfWeek.diff(moment(startEvent), "days") + 1;
+        return colspanVal;
     }
 };
 
 const isStartDate = (event, date) => {
-    return moment(event.start_date).format("YYYY-MM-DD") === date; //boolean
+    if (moment(event.start_date).format("YYYY-MM-DD") === date) {
+        return true;
+    } //boolean
 };
 </script>
 
@@ -114,25 +99,26 @@ const isStartDate = (event, date) => {
             </thead>
             <tbody>
                 <tr v-for="event in events" :key="event.id">
-                    <td class="border px-3">
-                        {{ event.meetingroom.name }}
+                    <td class="border px-3 relative">
+                        <div
+                            class="absolute top-0 left-0 w-full h-full font-bold text-center align-middle"
+                        >
+                            {{ event.meetingroom.name }}
+                        </div>
                     </td>
                     <template v-for="day in weekDays" :key="day.date">
                         <td
-                            v-if="!isStartDate(event, day.date)"
+                            v-if="event.start_date > day.date"
                             class="border px-3 relative"
                             colspan="1"
                         ></td>
                         <td
                             v-else
-                            class="border px-3 relative"
-                            :colspan="
-                                isStartDate(event, day.date)
-                                    ? getEventColspan(event, day.date)
-                                    : 1
-                            "
+                            class="border px-3 eventcell relative"
+                            :colspan="getEventColspan(event, day.date)"
                         >
                             <div
+                                v-if="isStartDate(event, day.date)"
                                 :style="{ background: event.color }"
                                 class="absolute top-0 left-0 w-full h-full font-bold text-center align-middle"
                             >
@@ -168,5 +154,8 @@ tbody tr td {
 
 .day {
     text-align: center;
+}
+.eventcell:not(:has(div)) {
+    display: none;
 }
 </style>
