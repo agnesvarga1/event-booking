@@ -20,9 +20,9 @@ class WeeklyScheduleController extends Controller
         //dd($weekStart,$weekEnd);
         $events = Event::where(function($query) use ($weekStart, $weekEnd) {
             $query->whereBetween('start_date', [$weekStart, $weekEnd])
-                  ->orWhereBetween('end_date', [$weekStart, $weekEnd]);
+                  ->orWhereBetween('end_date', [$weekStart, $weekEnd])->orWhere('end_date','>',$weekEnd )->where('start_date','<=',$weekStart);
         })->with('meetingroom')->get();
-        //dd($events);
+       //dd($events);
         return Inertia::render('Events/WeeklyView', [
             'events' => $events
         ]);
@@ -30,20 +30,22 @@ class WeeklyScheduleController extends Controller
 
     public function handlePost(Request $request)
     {
-        //dd($request);
+       // dd($request);
 
-        $weekStart = Carbon::parse($request->startOfWeek);
-        $weekEnd =Carbon::parse($request->endOfWeek);
-       // dd($weekStart,$weekEnd);
+        $weekStart =Carbon::parse($request->input('startOfWeek'));
+        $weekEnd = Carbon::parse($request->input('endOfWeek'));
+       //dd($weekStart,$weekEnd);
         $events = Event::where(function($query) use ($weekStart, $weekEnd) {
             $query->whereBetween('start_date', [$weekStart, $weekEnd])
-                  ->orWhereBetween('end_date', [$weekStart, $weekEnd]);
+                  ->orWhereBetween('end_date', [$weekStart, $weekEnd])->orWhere('end_date','>',$weekEnd )->where('start_date','<=',$weekStart);
         })->with('meetingroom')->get();
-        //dd($events);
+       // dd($events);
         return Inertia::render('Events/WeeklyView', [
-            'events' => $events
+            'events' => $events,
+            'currentWeekStart' => $weekStart->format('Y-m-d')
         ]);
     }
-}
+    }
+
 
 

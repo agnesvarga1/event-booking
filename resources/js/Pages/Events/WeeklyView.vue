@@ -1,19 +1,20 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, watch } from "vue";
 import moment from "moment";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
     events: Array,
 });
+//event dates in week
 
 const currentWeekStart = ref(moment().startOf("week"));
-
+const currWeekEnd = moment(currentWeekStart.value).endOf("week");
 let events = ref(props.events);
 let colspanVal = 1;
-const weekDays = computed(() => {
+let weekDays = computed(() => {
     let days = [];
     for (let i = 0; i < 7; i++) {
         const day = moment(currentWeekStart.value).add(i, "days");
@@ -26,14 +27,41 @@ const weekDays = computed(() => {
     return days;
 });
 
-// onMounted(() => {
-//     console.log(currEndOfWeek);
-// });
+const funGetWeekDays = () => {
+    let days = [];
+    for (let i = 0; i < 7; i++) {
+        const day = moment(currentWeekStart.value).add(i, "days");
+        days.push({
+            name: day.format("dddd"),
+            date: day.format("YYYY-MM-DD"),
+        });
+    }
+    //console.log(days);
+    return days;
+};
+//send data to backend logic
+const sendData = (s, e) => {
+    router.post(
+        "/dashboard/weeklyview",
+        {
+            startOfWeek: s.format("YYYY-MM-DD"),
+            endOfWeek: e.format("YYYY-MM-DD"),
+        },
+        {
+            //     preserveState: true,
+            onSuccess: (page) => {
+                events.value = page.props.events;
+            },
+        }
+    );
+};
 
 const nextWeek = () => {
     currentWeekStart.value = moment(currentWeekStart.value).add(1, "weeks");
-
-    //sendData(currentWeekStart.value, endOfWeek);
+    const endOfWeek = moment(currentWeekStart.value).endOf("week");
+    //sending data
+    sendData(currentWeekStart.value, endOfWeek);
+    weekDays = funGetWeekDays();
 };
 
 const prevWeek = () => {
@@ -41,23 +69,55 @@ const prevWeek = () => {
         1,
         "weeks"
     );
+    const endOfWeek = moment(currentWeekStart.value).endOf("week");
+    sendData(currentWeekStart.value, endOfWeek);
+    weekDays = funGetWeekDays();
 };
 
 const getEventColspan = (event, date) => {
-    // const eventEnd = moment(event.end_date);
-    if (moment(event.start_date).format("YYYY-MM-DD") === date) {
-        const startEvent = moment(event.start_date);
-        const endOfWeek = moment(currentWeekStart.value).endOf("week");
+    const eventEnd = moment(event.end_date);
+    const eventStart = moment(event.start_date);
+    const currentDate = moment(date);
+    const endOfWeek = moment(currentWeekStart.value).endOf("week");
 
-        colspanVal = endOfWeek.diff(moment(startEvent), "days") + 1;
+    if (currentDate.isBetween(eventStart, eventEnd, "days", "[]")) {
+        if (eventStart.isBefore(currentWeekStart.value)) {
+            colspanVal = Math.min(
+                eventEnd.diff(currentDate, "days") + 1,
+                endOfWeek.diff(currentDate, "days") + 1
+            );
+        } else {
+            colspanVal = Math.min(
+                eventEnd.diff(eventStart, "days") + 1,
+                endOfWeek.diff(eventStart, "days") + 1
+            );
+        }
         return colspanVal;
     }
+    return 1;
 };
 
 const isStartDate = (event, date) => {
-    if (moment(event.start_date).format("YYYY-MM-DD") === date) {
+    const eventStartDate = moment(event.start_date).format("YYYY-MM-DD");
+    const eventEndDate = moment(event.end_date).format("YYYY-MM-DD");
+    const currentWeekStartDate = moment(currentWeekStart.value).format(
+        "YYYY-MM-DD"
+    );
+
+    // Check if the event starts on the given date
+    if (eventStartDate === date) {
+        //  console.log(eventStartDate);
         return true;
-    } //boolean
+    }
+
+    if (
+        eventStartDate < currentWeekStartDate &&
+        eventEndDate >= date &&
+        date === currentWeekStartDate
+    ) {
+        return true;
+    }
+    return false;
 };
 </script>
 
@@ -101,21 +161,28 @@ const isStartDate = (event, date) => {
                 <tr v-for="event in events" :key="event.id">
                     <td class="border px-3 relative">
                         <div
-                            class="absolute top-0 left-0 w-full h-full font-bold text-center align-middle"
+                            class="absolute top-0 left-0 w-full h-full font-bold text-center bg-slate-300 pt-2"
                         >
                             {{ event.meetingroom.name }}
                         </div>
                     </td>
                     <template v-for="day in weekDays" :key="day.date">
                         <td
-                            v-if="event.start_date > day.date"
+                            v-if="
+                                event.start_date > day.date ||
+                                event.end_date < day.date ||
+                                day.date >= weekDays[6]
+                            "
                             class="border px-3 relative"
                             colspan="1"
                         ></td>
                         <td
-                            v-else
                             class="border px-3 eventcell relative"
-                            :colspan="getEventColspan(event, day.date)"
+                            :colspan="
+                                isStartDate(event, day.date)
+                                    ? getEventColspan(event, day.date)
+                                    : 1
+                            "
                         >
                             <div
                                 v-if="isStartDate(event, day.date)"
